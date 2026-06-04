@@ -28,8 +28,8 @@ export class DebtsController {
   @Get('id/:id')
   @ApiOperation({ summary: 'Consultar deuda por id' })
   @ApiOkResponse({ type: DebtResponseDto })
-  findOneById(@Param('id',ParseIntPipe) id_debt:number){
-    return this.debtsService.findById(id_debt)
+  findOneById(@Param('id',ParseIntPipe) id_debt:number, @GetUser() user:User){
+    return this.debtsService.findById(id_debt, user.id_user, user.id_role)
   }
 
   @Roles(Role.ADMIN)
@@ -57,21 +57,20 @@ export class DebtsController {
   @Post('id/:id/payment')
   @ApiOperation({ summary: 'Registrar un pago sobre una deuda' })
   @ApiOkResponse({ type: DebtResponseDto })
-  addPayment(@Param('id',ParseIntPipe) id_debt:number, @Body() createDebtPaymentDto:CreateDebtPaymentDto){
-    return this.debtsService.addPayment(id_debt, createDebtPaymentDto)
+  addPayment(@Param('id',ParseIntPipe) id_debt:number, @Body() createDebtPaymentDto:CreateDebtPaymentDto, @GetUser() user:User){
+    return this.debtsService.addPayment(id_debt, createDebtPaymentDto, user.id_user, user.id_role)
   }
 
   @Put('id/:id')
   @ApiOperation({ summary: 'Actualizar deuda' })
   @ApiOkResponse({ type: DebtResponseDto })
-  update(@Param('id',ParseIntPipe) id_debt:number, @Body() updateDebtDto:UpdateDebtDto){
-    return this.debtsService.update(id_debt, updateDebtDto)
+  update(@Param('id',ParseIntPipe) id_debt:number, @Body() updateDebtDto:UpdateDebtDto, @GetUser() user:User){
+    return this.debtsService.update(id_debt, updateDebtDto, user.id_user, user.id_role)
   }
 
-  @Roles(Role.ADMIN)
   @Delete('id/:id')
   @ApiOperation({ summary: 'Eliminar deuda' })
-  delete(@Param('id',ParseIntPipe) id_debt:number){
-    return this.debtsService.delete(id_debt)
+  delete(@Param('id',ParseIntPipe) id_debt:number, @GetUser() user:User){
+    return this.debtsService.delete(id_debt, user.id_user, user.id_role)
   }
 }

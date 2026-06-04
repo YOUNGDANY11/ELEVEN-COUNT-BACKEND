@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Debt } from './entities/debt.entity';
@@ -70,6 +70,15 @@ export class DebtsService {
     return debt
   }
 
+  private assertDebtAccess(id_role:number, debt:Debt, id_user:number){
+    const isAdmin = id_role === 1
+    const isOwner = debt.id_user === id_user
+
+    if(!isAdmin && !isOwner){
+      throw new ForbiddenException({status:'Error',mensaje:'No tienes permisos para realizar esta acción'})
+    }
+  }
+
   async findAll(){
     const debts = await this.debtRepository.find({
       relations:{payments:true, user:true},
@@ -79,8 +88,9 @@ export class DebtsService {
     return debts.map((debt) => this.calculateSummary(debt))
   }
 
-  async findById(id_debt:number){
+  async findById(id_debt:number, id_user:number, id_role:number){
     const debt = await this.findDebtOrFail(id_debt)
+    this.assertDebtAccess(id_role, debt, id_user)
     return this.calculateSummary(debt)
   }
 
@@ -105,8 +115,9 @@ export class DebtsService {
     return this.calculateSummary(fullDebt)
   }
 
-  async update(id_debt:number, updateDebtDto:UpdateDebtDto){
+  async update(id_debt:number, updateDebtDto:UpdateDebtDto, id_user:number, id_role:number){
     const existsDebt = await this.findDebtOrFail(id_debt)
+    this.assertDebtAccess(id_role, existsDebt, id_user)
     const debt = await this.debtRepository.merge(existsDebt, {
       ...updateDebtDto,
       management_fee: updateDebtDto.management_fee ?? existsDebt.management_fee,
@@ -117,14 +128,16 @@ export class DebtsService {
     return this.calculateSummary(fullDebt)
   }
 
-  async delete(id_debt:number){
+  async delete(id_debt:number, id_user:number, id_role:number){
     const debt = await this.findDebtOrFail(id_debt)
+    this.assertDebtAccess(id_role, debt, id_user)
     await this.debtRepository.remove(debt)
     return debt
   }
 
-  async addPayment(id_debt:number, createDebtPaymentDto:CreateDebtPaymentDto){
+  async addPayment(id_debt:number, createDebtPaymentDto:CreateDebtPaymentDto, id_user:number, id_role:number){
     const debt = await this.findDebtOrFail(id_debt)
+    this.assertDebtAccess(id_role, debt, id_user)
     const debtSummary = this.calculateSummary(debt)
 
     if(createDebtPaymentDto.amount > debtSummary.amount_remaining){
