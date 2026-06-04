@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Put, ParseEnumPipe } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { categoryEnum } from './entities/category.entity';
+import { FindCategoryParamsDto } from './dto/FindCategoryParams';
 
 @Controller('categories')
 export class CategoriesController {
@@ -15,6 +17,11 @@ export class CategoriesController {
   @Get('id/:id')
   findOneById(@Param('id',ParseIntPipe) id_category:number){
     return this.categoriesService.findById(id_category)
+  }
+
+  @Get('type/:type')
+  findByTypeCategory(@Param() params:FindCategoryParamsDto){
+    return this.categoriesService.findByTypeCategory(params.type)
   }
 
   @Post()

@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Movement } from "src/movements/entities/movement.entity";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('users')
 export class User {
@@ -22,4 +23,7 @@ export class User {
 
     @UpdateDateColumn({type:'timestamptz'})
     updated_at:Date
+
+    @OneToMany(()=> Movement, (movement) => movement.user)
+    movement: Movement[]
 }

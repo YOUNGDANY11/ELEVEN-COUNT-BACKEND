@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Put } from '@nestjs/common';
 import { MovementsService } from './movements.service';
 import { CreateMovementDto } from './dto/create-movement.dto';
 import { UpdateMovementDto } from './dto/update-movement.dto';
@@ -7,28 +7,43 @@ import { UpdateMovementDto } from './dto/update-movement.dto';
 export class MovementsController {
   constructor(private readonly movementsService: MovementsService) {}
 
-  @Post()
-  create(@Body() createMovementDto: CreateMovementDto) {
-    return this.movementsService.create(createMovementDto);
-  }
-
   @Get()
-  findAll() {
-    return this.movementsService.findAll();
+  findAll(){
+    return this.movementsService.findAll()
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.movementsService.findOne(+id);
+  @Get('id/:id')
+  findById(@Param('id',ParseIntPipe) id_movement:number){
+    return this.movementsService.findById(id_movement)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMovementDto: UpdateMovementDto) {
-    return this.movementsService.update(+id, updateMovementDto);
+  @Get('category/:id')
+  findByCategoryId(@Param('id',ParseIntPipe)id_category:number){
+    return this.movementsService.findByCategoryId(id_category)
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.movementsService.remove(+id);
+  @Get('user/:id')
+  findByUserId(@Param('id',ParseIntPipe) id_user:number){
+    return this.movementsService.findByUserId(id_user)
+  }
+
+  @Get('user-active/:id')
+  findByUserActive(@Param('id',ParseIntPipe) id_user:number){
+    return this.movementsService.findByUserId(id_user)
+  }
+
+  @Post()
+  create(@Body() createMovementDto:CreateMovementDto){
+    return this.movementsService.create(createMovementDto)
+  }
+
+  @Put('id/:id')
+  update(@Param('id',ParseIntPipe) id_movement:number, @Body() updateMovementDto:UpdateMovementDto){
+    return this.movementsService.update(id_movement,updateMovementDto)
+  }
+
+  @Delete('id/:id')
+  delete(@Param('id',ParseIntPipe) id_movement:number){
+    return this.movementsService.delete(id_movement)
   }
 }
