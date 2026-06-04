@@ -34,7 +34,7 @@ export class UsersService {
     const existsEmail = await this.userRepository.findOneBy({email})
     if(existsEmail) throw new BadRequestException({status:'Error',mensaje:'Ya existe este correo registrado a algun usuario'})
     const password = await bcrypt.hash(createUserDto.password,10)
-    const user = await this.userRepository.save({...createUserDto, password, id_role:1})
+    const user = await this.userRepository.save({...createUserDto, password, id_role:2})
     return user
   }
 
