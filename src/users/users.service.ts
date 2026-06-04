@@ -12,7 +12,7 @@ export class UsersService {
   ){}
 
   async findAll(){
-    const users = await this.userRepository.find()
+    const users = await this.userRepository.find({order:{id_user:'DESC'}})
     if(users.length === 0) throw new NotFoundException({status:'Error',mensaje:'No hay usuarios registrados'})
     return users
   }
