@@ -1,12 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Put } from '@nestjs/common';
 import { MovementsService } from './movements.service';
 import { CreateMovementDto } from './dto/create-movement.dto';
 import { UpdateMovementDto } from './dto/update-movement.dto';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/enums/role.enum';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { User } from 'src/users/entities/user.entity';
 
+@Roles(Role.ADMIN, Role.USER)
 @Controller('movements')
 export class MovementsController {
   constructor(private readonly movementsService: MovementsService) {}
 
+  @Roles(Role.ADMIN)
   @Get()
   findAll(){
     return this.movementsService.findAll()
@@ -27,9 +33,9 @@ export class MovementsController {
     return this.movementsService.findByUserId(id_user)
   }
 
-  @Get('user-active/:id')
-  findByUserActive(@Param('id',ParseIntPipe) id_user:number){
-    return this.movementsService.findByUserId(id_user)
+  @Get('user-active')
+  findByUserActive(@GetUser() user: User){
+    return this.movementsService.findByUserId(user.id_user)
   }
 
   @Post()

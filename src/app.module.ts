@@ -1,8 +1,14 @@
 import { Module, Options } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { CategoriesModule } from './categories/categories.module';
 import { MovementsModule } from './movements/movements.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
+import { RolesModule } from './roles/roles.module';
+import { DebtsModule } from './debts/debts.module';
 
 @Module({
   imports: [
@@ -17,9 +23,15 @@ import { MovementsModule } from './movements/movements.module';
     }),
     UsersModule,
     CategoriesModule,
-    MovementsModule
+    MovementsModule,
+    AuthModule,
+    RolesModule,
+    DebtsModule
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+  ],
 })
 export class AppModule {}
